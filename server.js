@@ -1,4 +1,4 @@
-import express, { urlencoded, json, response } from 'express';
+import express, { urlencoded, json } from 'express';
 import bcrypt from 'bcrypt-nodejs';
 import cors from 'cors';
 import knex from 'knex';
@@ -14,17 +14,17 @@ const db = knex({
     },
 });
 
-db.select('*')
-    .from('users')
-    .then((data) => {
-        console.log(data);
-    });
+// db.select('*')
+//     .from('users')
+//     .then((data) => {
+//         console.log(data);
+//     });
 
 const app = express();
 
 app.use(urlencoded({ extended: false }));
-app.use(json()); //bodyparser
 app.use(cors());
+app.use(json()); //bodyparser
 
 app.post('/signin', (req, res) => {
     db.select('email', 'hash')
@@ -33,7 +33,8 @@ app.post('/signin', (req, res) => {
         .then((data) => {
             const isValid = bcrypt.compareSync(req.body.password, data[0].hash);
             if (isValid) {
-                db.select('*')
+                return db
+                    .select('*')
                     .from('users')
                     .where('email', '=', req.body.email)
                     .then((user) => {
@@ -97,7 +98,7 @@ app.put('/image', (req, res) => {
         .increment('entries', 1)
         .returning('entries')
         .then((entries) => {
-            res.json(entries[0].entries)
+            res.json(entries[0].entries);
         })
         .catch((err) => res.status(400).json('unable to get entries'));
 });
