@@ -52,6 +52,10 @@ app.post('/imageurl', (req, res) => {
     image.handleApiCall(req, res);
 });
 
+export default function handler(req, res) {// for vercel deployment
+    res.status(200).json({ message: 'Hello from the backend!' });
+}
+
 app.listen(3000, () => {
     console.log('app is running on port 3000');
 });
